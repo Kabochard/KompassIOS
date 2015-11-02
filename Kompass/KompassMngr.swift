@@ -16,7 +16,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     // BLE
     var centralManager : CBCentralManager!
     var sensorTagPeripheral : CBPeripheral!
-    var but : UIButton!
+  //var but : UIButton!
     
     let SERVICE_TRUCONNECT_UUID = CBUUID(string: "175f8f23-a570-49bd-9627-815a6a27de2a")
     let CHARACTERISTIC_TRUCONNECT_PERIPHERAL_RX_UUID =  CBUUID(string:"1cce1ea8-bd34-4813-a00a-c76e028fadcb")
@@ -28,7 +28,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     var modeChar:CBCharacteristic?;
     
     
-    let queue = NSOperationQueue()
+   // let queue = NSOperationQueue()
 
     //Location
     var locmanager: CLLocationManager!
@@ -39,12 +39,15 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     var kompass: KompassVC!
     
     
+    
+    //Properties
     var target: CLLocation?
         {
         get {
             return target_
         }
         set (loc) {
+            //send new target info to device
             target_ = loc
             write2Device()
         }
@@ -107,9 +110,9 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     //UpdatePos
     func write2Device()
     {
-        if sensorTagPeripheral != nil
+        if sensorTagPeripheral != nil && rxChar != nil
         {
-            let rdist = Int(round(dist/1000))*1000
+            let rdist = Int(round(dist/100))
             let rbearing = max(15, min(345, 180 + Int(bearing)))
             
             let distString = rdist.format("04")
@@ -118,18 +121,11 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
             let formatedString = "d\(distString)b\(bearingString)\n"
             
             
-            
-            //            var distFormated = "d \((dist as Int).format("04")) "
-            //            let someInt = 4, someIntFormat = "03"
-            //            println("The integer number \(someInt) formatted with \"\(someIntFormat)\" looks like \(someInt.format(someIntFormat))")
-            // The integer number 4 formatted with "03" looks like 004
-            
             let data = (formatedString as NSString).dataUsingEncoding(NSUTF8StringEncoding)
             self.sensorTagPeripheral.writeValue(data!, forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
+            print(formatedString)
+            print("msg sent")
         }
-        
-        
-        // sensorTagPeripheral!.writeValue(NSData("d120"), forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
         
     }
 
@@ -168,7 +164,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     // Check out the discovered peripherals to find Sensor Tag
     func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
         
-        let deviceName = "AMS-0D91"
+        let deviceName = "AMS-07F4"
         let nameOfDeviceFound = (advertisementData as NSDictionary).objectForKey(CBAdvertisementDataLocalNameKey) as? NSString
         
         if (nameOfDeviceFound == deviceName) {
@@ -208,6 +204,8 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     }
     
     
+    
+    
     // Enable notification and sensor for each characteristic of valid service
     func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
         
@@ -245,19 +243,37 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         print("Connected")
         
         if characteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
+            
+//            NSData *data = characteristic.value;
+//            NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
+//            
+//            NSLog(@"Value %@",value);
+//            NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//            
+//            NSLog(@"Data ====== %@", stringFromData);
+//            
             // Convert NSData to array of signed 16 bit values
             let dataBytes = characteristic.value
             let dataLength = dataBytes!.length
-            var dataArray = [Int16](count: dataLength, repeatedValue: 0)
-            dataBytes!.getBytes(&dataArray, length: dataLength * sizeof(Int16))
             
-            // Element 1 of the array will be ambient temperature raw value
-            let degree = Double(dataArray[1])
+            var msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
+            
+//            //let msg = NSString(bytes: dataBytes, length: dataLength, encoding: let dataLength = dataBytes!.length)
+//            var dataArray = [NSUTF8StringEncoding](count: dataLength, repeatedValue: 0)
+//            dataBytes!.getBytes(&dataArray, length: dataLength * sizeof(Int16))
+//            
+//            // Element 1 of the array will be ambient temperature raw value
+//            let degree = Double(dataArray[1])
             
             // Display on the temp label
-            print(degree)
+            print(dataArray)
         }
+        
+       
     }
+    
+    
+    
     
     //MARK: Location
     

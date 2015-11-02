@@ -19,45 +19,7 @@ class KompassVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate {
     var tableScreen: LookUpVC!
     
     override func viewDidLoad() {
-        
-        let menuBar = UIView()
-        menuBar.translatesAutoresizingMaskIntoConstraints = false
-        menuBar.backgroundColor = StaticInfo.MainColor
-        
-        
-        searchBar = UITextField()
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.textColor = StaticInfo.MainColor
-        searchBar.backgroundColor = StaticInfo.SecondColor
-        searchBar.delegate = self
-        
-        
-        let BLEButton = UIButton()
-        BLEButton.translatesAutoresizingMaskIntoConstraints = false
-        BLEButton.backgroundColor = StaticInfo.SecondColor
-        
-       
-       // menuBar.addSubview(BLEButton)
-         menuBar.addSubview(searchBar)
-        
-      //  BLEButton.constrainWidthTo(menuBar, pct: 0.1)
-      //  BLEButton.constrainToBeSquare()
-        
-        view.addSubview(menuBar)
-        menuBar.stretchToWidthOfSuperView()
-        menuBar.constrainHeightTo(self.view, pct: 0.1)
-        
-       
-  
-    
-       let menuBarConstH = NSLayoutConstraint.constraintsWithVisualFormat("H:|-[txt]-|", options: NSLayoutFormatOptions.AlignAllCenterY, views: ["txt":searchBar"butt":BLEButton])
-        
-    //    menuBar.addConstraints(menuBarConstH)
-        searchBar.text = "Search"
-        
-       
-        
-        
+
         let mapView = GMSMapView()
         mapView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -67,14 +29,21 @@ class KompassVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate {
         mapView.stretchToWidthOfSuperView()
         mapView.constrainHeightTo(view, pct: 0.5)
         
-        
         deviceV = DeviceView()
         deviceV.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(deviceV)
         deviceV.stretchToWidthOfSuperView()
         
-        //deviceV.constrainToBeSquare()
+        let menuBar = MenuBarView()
+        menuBar.translatesAutoresizingMaskIntoConstraints = false
+        menuBar.backgroundColor = StaticInfo.MainColor
+
+        
+        view.addSubview(menuBar)
+        menuBar.stretchToWidthOfSuperView()
+        menuBar.constrainHeightTo(self.view, pct: 0.1)
+
         let statusbarHeight = UIApplication.sharedApplication().statusBarFrame.size.height
         
         let constV = NSLayoutConstraint.constraintsWithVisualFormat("V:|-spacing-[box][map][dev]|", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: ["spacing":statusbarHeight], views: ["box":menuBar,"map":mapView, "dev":deviceV])
@@ -82,9 +51,14 @@ class KompassVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate {
         view.addConstraints(constV)
         
         
+        searchBar = menuBar.searchBar
+        searchBar.delegate = self
+       
+     
+        
         //Init Kompass manager
         KompassManager = KompassMngr(kompasss: self)
-        BLEButton.addTarget(KompassManager!, action: "BLEConnect", forControlEvents: UIControlEvents.TouchUpInside)
+        menuBar.BLEButton.addTarget(KompassManager!, action: "BLEConnect", forControlEvents: UIControlEvents.TouchUpInside)
         
         mapView.myLocationEnabled = true
         mapView.settings.myLocationButton = true
@@ -195,18 +169,13 @@ class DeviceView: UIView{
     
     func setupView()
     {
-        
-      
-        
-        
-        //roseDesVents = UIImageView()
+       
         roseDesVents = UIImageView()
         roseDesVents.image = UIImage(named: "rdesVents")
         roseDesVents.translatesAutoresizingMaskIntoConstraints = false
         
         
         self.addSubview(roseDesVents)
-        //roseDesVents.stretchToWidthOfSuperView()
         roseDesVents.constrainHeightTo(self, pct: 0.8)
         roseDesVents.constrainToBeSquare()
         
@@ -220,14 +189,64 @@ class DeviceView: UIView{
         recapText.backgroundColor = StaticInfo.MainColor
 
         
-        let constV = NSLayoutConstraint.constraintsWithVisualFormat("V:|[lbl1][img]|", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: ["lbl1":recapText,"img":roseDesVents])
+        let constV = NSLayoutConstraint.constraintsWithVisualFormat("V:|[lbl1][img]|", options: NSLayoutFormatOptions.AlignAllCenterX, views: ["lbl1":recapText,"img":roseDesVents])
         
         self.addConstraints(constV)
     }
     
-   
     
+}
+
+class MenuBarView: UIView{
     
+   var searchBar: UITextField!
     
+    var BLEButton : UIButton!
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.backgroundColor = UIColor.whiteColor()
+        
+        setupView()
+        
+        
+    }
+    
+    func setupView()
+    {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        searchBar = UITextField()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.textColor = StaticInfo.MainColor
+        searchBar.backgroundColor = StaticInfo.SecondColor
+      
+        
+        self.addSubview(searchBar)
+        
+        BLEButton = UIButton()
+        BLEButton.translatesAutoresizingMaskIntoConstraints = false
+        BLEButton.backgroundColor = StaticInfo.SecondColor
+        
+        self.addSubview(BLEButton)
+
+        BLEButton.constrainHeightTo(self, pct: 0.8)
+        BLEButton.constrainToBeSquare()
+        
+        searchBar.constrainHeightTo(self, pct: 0.8)
+        
+        let menuBarConstH = NSLayoutConstraint.constraintsWithVisualFormat("H:|-[butt]-[txt]-|", views: ["butt":BLEButton,"txt":searchBar])
+        
+        self.addConstraints(menuBarConstH)
+        searchBar.text = "Search"
+
+        searchBar.centerVerticallyTo(self)
+        BLEButton.centerVerticallyTo(self)
+
+    }
     
 }
