@@ -68,7 +68,7 @@ class AddressVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, U
         txtBar.frame = CGRect(x: 0, y: 0, width: 1 * view.frame.width, height: 0.1 * view.frame.height)
         resTable.frame = CGRect(x: 0, y: 0.1 * view.frame.height, width: view.frame.width, height: 0.9 * view.frame.height)
         
-        println(view.frame.width)
+        print(view.frame.width)
         
         searchBar.frame = CGRect(x: 0.1 * txtBar.frame.width, y: 0.1 * txtBar.frame.height, width:  0.8 * txtBar.frame.width, height: 0.9 * txtBar.frame.height)
         
@@ -80,14 +80,14 @@ class AddressVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, U
     
     func textFieldDidBeginEditing(textField: UITextField) {
         textField.text = ""
-        println("Fuck")
+        print("Fuck")
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         
         
-        let string2search = textField.text + string
-        if count (string2search) > 2
+        let string2search = textField.text! + string
+        if string2search.characters.count > 2
         {
             
             taskMng.autoComplete(string2search, location: root!.mapView.myLocation.coordinate, radius: 10000, completionHandler: { (status, success, res) -> Void in
@@ -111,16 +111,18 @@ class AddressVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, U
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
-        println("You")
+        print("You")
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
+        let ids = resDic.map { (x:(String, String)) -> String in
+            x.0
+        }
+        let id = ids[indexPath.row]
         
-        let id = resDic.keys.array[indexPath.row]
         
-        
-        var cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: id)
+        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: id)
         
         cell.textLabel?.text = resDic[id]
         
@@ -149,7 +151,7 @@ class AddressVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, U
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         searchBar.text = resTable.cellForRowAtIndexPath(indexPath)?.textLabel?.text
-        var placeId = resTable.cellForRowAtIndexPath(indexPath)?.reuseIdentifier
+        let placeId = resTable.cellForRowAtIndexPath(indexPath)?.reuseIdentifier
         
         if (placeId != nil)
         {

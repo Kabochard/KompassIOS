@@ -76,12 +76,12 @@ class MapTasks: NSObject {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             let placesData = NSData(contentsOfURL: placesURL!)
             
-            var error: NSError?
-            let dictionary: Dictionary<NSObject, AnyObject> = NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers, error: &error) as! Dictionary<NSObject, AnyObject>
+            let error: NSError?
+            let dictionary: Dictionary<NSObject, AnyObject> = (try! NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers)) as! Dictionary<NSObject, AnyObject>
             
-            if (error != nil) {
-                println(error)
-                completionHandler(status: "", success: false, res: nil)
+            if false {// (error != nil) {
+                //print(error)
+                //completionHandler(status: "", success: false, res: nil)
             }
             else {
                 let status = dictionary["status"] as! String
@@ -159,11 +159,11 @@ class MapTasks: NSObject {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             let placesData = NSData(contentsOfURL: placesURL!)
             
-            var error: NSError?
-            let dictionary: Dictionary<NSObject, AnyObject> = NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers, error: &error) as! Dictionary<NSObject, AnyObject>
+            let error: NSError?
+            let dictionary: Dictionary<NSObject, AnyObject> = (try! NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers)) as! Dictionary<NSObject, AnyObject>
             
-            if (error != nil) {
-                println(error)
+            if false { //(error != nil) {
+              //  print(error)
                 completionHandler(status: "", success: false, res: nil)
             }
             else {
@@ -244,11 +244,11 @@ class MapTasks: NSObject {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             let placesData = NSData(contentsOfURL: autoCompURL!)
             
-            var error: NSError?
-            let dictionary: Dictionary<NSObject, AnyObject> = NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers, error: &error) as! Dictionary<NSObject, AnyObject>
+            let error: NSError?
+            let dictionary: Dictionary<NSObject, AnyObject> = (try! NSJSONSerialization.JSONObjectWithData(placesData!, options: NSJSONReadingOptions.MutableContainers)) as! Dictionary<NSObject, AnyObject>
             
-            if (error != nil) {
-                println(error)
+            if false { //(error != nil) {
+                //print(error)
                 completionHandler(status: "", success: false, res: nil)
             }
             else {
@@ -414,11 +414,11 @@ class MapTasks: NSObject {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     let directionsData = NSData(contentsOfURL: directionsURL!)
                     
-                    var error: NSError?
-                    let dictionary: Dictionary<NSObject, AnyObject> = NSJSONSerialization.JSONObjectWithData(directionsData!, options: NSJSONReadingOptions.MutableContainers, error: &error) as! Dictionary<NSObject, AnyObject>
+                    let error: NSError?
+                    let dictionary: Dictionary<NSObject, AnyObject> = (try! NSJSONSerialization.JSONObjectWithData(directionsData!, options: NSJSONReadingOptions.MutableContainers)) as! Dictionary<NSObject, AnyObject>
                     
-                    if (error != nil) {
-                        println(error)
+                    if false { //(error != nil) {
+                        //print(error)
                         completionHandler(status: "", success: false)
                     }
                     else {

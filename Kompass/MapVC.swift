@@ -73,7 +73,7 @@ class MapVC: UIViewController,  GMSMapViewDelegate, UITextFieldDelegate, CLLocat
     }
     
     override func viewWillLayoutSubviews() {
-        if view.superview != nil && count(dicSize) > 0 && count(dicCoord) > 0
+        if view.superview != nil && dicSize.count > 0 && dicCoord.count > 0
         {
             drawLayout()
         }
@@ -193,8 +193,8 @@ class MapVC: UIViewController,  GMSMapViewDelegate, UITextFieldDelegate, CLLocat
     
     private func defineLayout(){
         
-        var availableX = view.frame.width
-        var availableY = view.frame.height
+        let availableX = view.frame.width
+        let availableY = view.frame.height
         
         dicCoord["Map"] = CGPoint(x: 0.0   , y: 0.00)//CGPoint(x: 0.45 * availableX , y: 0.05 * availableY)
         dicSize["Map"] = Size(width: availableX * 1, height: 1 * availableY )//Size(width: availableX * 0.525, height: 0.925 * availableY )
@@ -263,9 +263,9 @@ class MapVC: UIViewController,  GMSMapViewDelegate, UITextFieldDelegate, CLLocat
     
     func GetRec(viewName: String, center: Bool) -> CGRect
     {
-        var siz = dicSize[viewName]!
-        var coord = dicCoord[viewName]!
-        var startY = CGFloat(0.0)
+        let siz = dicSize[viewName]!
+        let coord = dicCoord[viewName]!
+        let startY = CGFloat(0.0)
         
         if center{
             return CGRect(
@@ -324,14 +324,14 @@ class MapVC: UIViewController,  GMSMapViewDelegate, UITextFieldDelegate, CLLocat
                 
                 if let address = response.firstResult() {
                     let lines = address.lines as! [String]
-                    self.SearchBar.text = join(", ", lines)
+                    self.SearchBar.text = lines.joinWithSeparator(", ")
                     
                   
                 }
                     
                 else
                 {
-                    println(error.description)
+                    print(error.description)
                     self.SearchBar.text = "????"
                 }
             }

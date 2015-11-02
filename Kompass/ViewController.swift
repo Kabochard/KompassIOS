@@ -51,27 +51,27 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     }
     
         // Check status of BLE hardware
-        func centralManagerDidUpdateState(central: CBCentralManager!) {
+        func centralManagerDidUpdateState(central: CBCentralManager) {
             if central.state == CBCentralManagerState.PoweredOn {
                 // Scan for peripherals if BLE is turned on
                 central.scanForPeripheralsWithServices(nil, options: nil)
-               println("Searching for BLE Devices")
+               print("Searching for BLE Devices")
             }
             else {
                 // Can have different conditions for all states if needed - print generic message for now
-                println("Bluetooth switched off or not initialized")
+                print("Bluetooth switched off or not initialized")
             }
         }
     
         // Check out the discovered peripherals to find Sensor Tag
-        func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!) {
+        func centralManager(central: CBCentralManager, didDiscoverPeripheral peripheral: CBPeripheral, advertisementData: [String : AnyObject], RSSI: NSNumber) {
     
             let deviceName = "AMS-0D91"
             let nameOfDeviceFound = (advertisementData as NSDictionary).objectForKey(CBAdvertisementDataLocalNameKey) as? NSString
     
             if (nameOfDeviceFound == deviceName) {
                 // Update Status Label
-                println("Device Found")
+                print("Device Found")
     
                 // Stop scanning
                 self.centralManager.stopScan()
@@ -81,21 +81,21 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
                 self.centralManager.connectPeripheral(peripheral, options: nil)
             }
             else {
-                println("Sensor Tag NOT Found")
+                print("Sensor Tag NOT Found")
             }
         }
     
         // Discover services of the peripheral
-        func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {
-            println( "Discovering peripheral services")
+        func centralManager(central: CBCentralManager, didConnectPeripheral peripheral: CBPeripheral) {
+            print( "Discovering peripheral services")
             peripheral.discoverServices(nil)
         }
     
         // Check if the service discovered is a valid IR Temperature Service
-        func peripheral(peripheral: CBPeripheral!, didDiscoverServices error: NSError!) {
-            println( "Looking at peripheral services")
-            for service in peripheral.services {
-                let thisService = service as! CBService
+        func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
+            print( "Looking at peripheral services")
+            for service in peripheral.services! {
+                let thisService = service as CBService
                 if service.UUID == SERVICE_TRUCONNECT_UUID {
                     // Discover characteristics of IR Temperature Service
                     peripheral.discoverCharacteristics(nil, forService: thisService)
@@ -107,30 +107,30 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
     
     
         // Enable notification and sensor for each characteristic of valid service
-        func peripheral(peripheral: CBPeripheral!, didDiscoverCharacteristicsForService service: CBService!, error: NSError!) {
+        func peripheral(peripheral: CBPeripheral, didDiscoverCharacteristicsForService service: CBService, error: NSError?) {
     
             // update status label
-            println("Enabling Device comunicatoin")
+            print("Enabling Device comunicatoin")
     
             // 0x01 data byte to enable sensor
             var enableValue = 1
             let enablyBytes = NSData(bytes: &enableValue, length: sizeof(UInt8))
     
             // check the uuid of each characteristic to find config and data characteristics
-            for charateristic in service.characteristics {
+            for charateristic in service.characteristics! {
                 let thisCharacteristic = charateristic as! CBCharacteristic
                 // check for data characteristic
                 if thisCharacteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
                     // Enable Sensor Notification
                     txChar = thisCharacteristic
                     self.sensorTagPeripheral.setNotifyValue(true, forCharacteristic: thisCharacteristic)
-                    println("yo")
+                    print("yo")
                 }
                 // check for config characteristic
                 if thisCharacteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_RX_UUID {
                     // Enable Sensor
                     rxChar = thisCharacteristic
-                    println("gros")
+                    print("gros")
                 }
             }
             
@@ -139,22 +139,22 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
     
         // Get data values when they are updated
-        func peripheral(peripheral: CBPeripheral!, didUpdateValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
+        func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
     
-            println("Connected")
+            print("Connected")
     
             if characteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
                 // Convert NSData to array of signed 16 bit values
                 let dataBytes = characteristic.value
-                let dataLength = dataBytes.length
+                let dataLength = dataBytes!.length
                 var dataArray = [Int16](count: dataLength, repeatedValue: 0)
-                dataBytes.getBytes(&dataArray, length: dataLength * sizeof(Int16))
+                dataBytes!.getBytes(&dataArray, length: dataLength * sizeof(Int16))
     
                 // Element 1 of the array will be ambient temperature raw value
                 let degree = Double(dataArray[1])
     
                 // Display on the temp label
-                println(degree)
+                print(degree)
             }
         }
     
@@ -162,7 +162,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         func write2Device()
         {
             let data = ("d0133b090\n" as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-            self.sensorTagPeripheral.writeValue(data, forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
+            self.sensorTagPeripheral.writeValue(data!, forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
     
            // sensorTagPeripheral!.writeValue(NSData("d120"), forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
        

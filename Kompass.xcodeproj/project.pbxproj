@@ -13,6 +13,10 @@
 		DA8072A91B6E962100C01063 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA8072A81B6E962100C01063 /* Images.xcassets */; };
 		DA8072AC1B6E962100C01063 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DA8072AA1B6E962100C01063 /* LaunchScreen.xib */; };
 		DA8072B81B6E962100C01063 /* KompassTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8072B71B6E962100C01063 /* KompassTests.swift */; };
+		DAEBBB291BE7944800CC486C /* KompassMngr.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBBB281BE7944800CC486C /* KompassMngr.swift */; };
+		DAEBBB2C1BE79CC300CC486C /* KompassVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBBB2B1BE79CC300CC486C /* KompassVC.swift */; };
+		DAEBBB2E1BE79D2000CC486C /* StaticInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBBB2D1BE79D2000CC486C /* StaticInfo.swift */; };
+		DAEBBB301BE7A3A500CC486C /* AutoLayoutExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEBBB2F1BE7A3A500CC486C /* AutoLayoutExtension.swift */; };
 		DAF7F4D01B71458C0009819E /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAF7F4CF1B71458C0009819E /* MapVC.swift */; };
 		DAF7F4DC1B71464B0009819E /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF7F4DB1B71464B0009819E /* GoogleMaps.framework */; };
 		DAF7F4DE1B7146B10009819E /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAF7F4DD1B7146B10009819E /* AVFoundation.framework */; };
@@ -56,6 +60,10 @@
 		DA8072B11B6E962100C01063 /* KompassTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KompassTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA8072B61B6E962100C01063 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA8072B71B6E962100C01063 /* KompassTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KompassTests.swift; sourceTree = "<group>"; };
+		DAEBBB281BE7944800CC486C /* KompassMngr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KompassMngr.swift; sourceTree = "<group>"; };
+		DAEBBB2B1BE79CC300CC486C /* KompassVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KompassVC.swift; sourceTree = "<group>"; };
+		DAEBBB2D1BE79D2000CC486C /* StaticInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StaticInfo.swift; sourceTree = "<group>"; };
+		DAEBBB2F1BE7A3A500CC486C /* AutoLayoutExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoLayoutExtension.swift; sourceTree = "<group>"; };
 		DAF7F4CF1B71458C0009819E /* MapVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
 		DAF7F4DB1B71464B0009819E /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Kompass/GoogleMaps.framework; sourceTree = "<group>"; };
 		DAF7F4DD1B7146B10009819E /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -151,6 +159,8 @@
 		DA80729E1B6E962100C01063 /* Kompass */ = {
 			isa = PBXGroup;
 			children = (
+				DAEBBB2A1BE79BB800CC486C /* CleanCode */,
+				DAEBBB271BE78E8600CC486C /* Logic */,
 				DAF7F50A1B7162B80009819E /* Screens */,
 				DA8072A11B6E962100C01063 /* AppDelegate.swift */,
 				DA8072A31B6E962100C01063 /* ViewController.swift */,
@@ -192,11 +202,29 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		DAEBBB271BE78E8600CC486C /* Logic */ = {
+			isa = PBXGroup;
+			children = (
+				DAEBBB281BE7944800CC486C /* KompassMngr.swift */,
+			);
+			name = Logic;
+			sourceTree = "<group>";
+		};
+		DAEBBB2A1BE79BB800CC486C /* CleanCode */ = {
+			isa = PBXGroup;
+			children = (
+				DAEBBB2B1BE79CC300CC486C /* KompassVC.swift */,
+				DAF7F50D1B71671C0009819E /* LookUpVC.swift */,
+				DAEBBB2D1BE79D2000CC486C /* StaticInfo.swift */,
+				DAEBBB2F1BE7A3A500CC486C /* AutoLayoutExtension.swift */,
+			);
+			name = CleanCode;
+			sourceTree = "<group>";
+		};
 		DAF7F50A1B7162B80009819E /* Screens */ = {
 			isa = PBXGroup;
 			children = (
 				DAF7F50B1B71630D0009819E /* HomeVC.swift */,
-				DAF7F50D1B71671C0009819E /* LookUpVC.swift */,
 				DA246FB01B74F8AA005910D2 /* deviceVC.swift */,
 			);
 			name = Screens;
@@ -246,7 +274,9 @@
 		DA8072941B6E962100C01063 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftMigration = 0710;
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = Rsx;
 				TargetAttributes = {
 					DA80729B1B6E962100C01063 = {
@@ -306,7 +336,11 @@
 				DA8072A41B6E962100C01063 /* ViewController.swift in Sources */,
 				DAF7F50E1B71671C0009819E /* LookUpVC.swift in Sources */,
 				DAF7F50C1B71630D0009819E /* HomeVC.swift in Sources */,
+				DAEBBB2E1BE79D2000CC486C /* StaticInfo.swift in Sources */,
 				DAF7F4D01B71458C0009819E /* MapVC.swift in Sources */,
+				DAEBBB291BE7944800CC486C /* KompassMngr.swift in Sources */,
+				DAEBBB301BE7A3A500CC486C /* AutoLayoutExtension.swift in Sources */,
+				DAEBBB2C1BE79CC300CC486C /* KompassVC.swift in Sources */,
 				DA246FB11B74F8AA005910D2 /* deviceVC.swift in Sources */,
 				DAF7F4F71B7149460009819E /* AddressVC.swift in Sources */,
 				DAF7F4F91B71499E0009819E /* MapTasks.swift in Sources */,
@@ -366,7 +400,9 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -382,7 +418,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -410,6 +446,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -420,7 +457,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -445,6 +482,7 @@
 					"$(PROJECT_DIR)/Kompass/GoogleMaps.framework",
 				);
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Rsx.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Kompass/Kompass-Bridging-Header.h";
@@ -470,6 +508,7 @@
 					"$(PROJECT_DIR)/Kompass/GoogleMaps.framework",
 				);
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Rsx.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Kompass/Kompass-Bridging-Header.h";
@@ -490,6 +529,7 @@
 				);
 				INFOPLIST_FILE = KompassTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Rsx.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Kompass.app/Kompass";
 			};
@@ -505,6 +545,7 @@
 				);
 				INFOPLIST_FILE = KompassTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Rsx.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Kompass.app/Kompass";
 			};

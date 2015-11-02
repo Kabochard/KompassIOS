@@ -33,14 +33,14 @@ class HomeVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate,CLLocati
         super.viewDidLoad()
         
         mapView = GMSMapView()
-        mapView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        mapView.translatesAutoresizingMaskIntoConstraints = false
         
         mapView.delegate = self
         
         view.addSubview(mapView)
         
         let constraintV = //NSLayoutConstraint(item: mapView!, attribute: NSLayoutAttribute.Width, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.Width, multiplier: 1.0, constant: 100)
-        NSLayoutConstraint.constraintsWithVisualFormat("V:|[item]|", options: nil, metrics: nil, views: ["item" : mapView!])
+        NSLayoutConstraint.constraintsWithVisualFormat("V:|[item]|", options: [], metrics: nil, views: ["item" : mapView!])
         
         self.view.addConstraints(constraintV)
         
@@ -156,9 +156,9 @@ class HomeVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate,CLLocati
     func setTarget(loc: CLLocation)
     {
         targetMarker.position = loc.coordinate
-        var bearing = getBearingBetweenTwoPoints1(mapView.myLocation, point2: loc)
+        let bearing = getBearingBetweenTwoPoints1(mapView.myLocation, point2: loc)
         bearingLbl.text = "Bearing: \(round(bearing * 10)/10)°"
-        var dist = loc.distanceFromLocation(mapView.myLocation)
+        let dist = loc.distanceFromLocation(mapView.myLocation)
         distanceLbl.text = "Distance: \(round(dist/10)/100) km"
         
         //device.update(bearing, distance: dist)
@@ -212,14 +212,14 @@ class HomeVC: UIViewController, GMSMapViewDelegate, UITextFieldDelegate,CLLocati
                 
                 if let address = response.firstResult() {
                     let lines = address.lines as! [String]
-                    self.SearchBar.text = join(", ", lines)
+                    self.SearchBar.text = lines.joinWithSeparator(", ")
                     
                     
                 }
                     
                 else
                 {
-                    println(error.description)
+                    print(error.description)
                     self.SearchBar.text = "????"
                 }
             }

@@ -18,7 +18,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
    
     var resDic = [String:String]()
     
-    var root: HomeVC?
+    var root: KompassVC?
     
     
     override func viewDidLoad() {
@@ -42,12 +42,12 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
         txtBar.addSubview(cancelButton)
         
         
-        cancelButton.backgroundColor = StaticColor.DarkOrange()
+        cancelButton.backgroundColor = StaticInfo.MainColor
         
         searchBar.backgroundColor = StaticColor.White()
-        searchBar.textColor = StaticColor.DarkOrange()
+        searchBar.textColor =  StaticInfo.MainColor
         searchBar.layer.cornerRadius = 5
-        searchBar.layer.borderColor = StaticColor.DarkOrange().CGColor
+        searchBar.layer.borderColor =  StaticInfo.MainColor.CGColor
         searchBar.layer.borderWidth = 1
         
        cancelButton.addTarget(self, action: "dismiss", forControlEvents: UIControlEvents.TouchUpInside)
@@ -62,7 +62,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
         txtBar.frame = CGRect(x: 0.05 * view.frame.width, y: 30, width: 0.9 * view.frame.width, height: 30)
         resTable.frame = CGRect(x: 0, y: 60, width: view.frame.width, height: 1 * view.frame.height - 60)
         
-        println(view.frame.width)
+        print(view.frame.width)
         
         searchBar.frame = CGRect(x: 0.1 * txtBar.frame.width, y: 0.1 * txtBar.frame.height, width:  0.65 * txtBar.frame.width, height: 0.9 * txtBar.frame.height)
 
@@ -72,17 +72,18 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
     
     func textFieldDidBeginEditing(textField: UITextField) {
         textField.text = ""
-        println("Fuck")
+        print("Fuck")
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         
         
-        let string2search = textField.text + string
-        if count (string2search) > 2
+        let string2search = textField.text! + string
+        if string2search.characters.count > 2
         {
+            if let coord = root!.KompassManager.locmanager.location?.coordinate {
             
-            taskMng.autoComplete(string2search, location: root!.mapView.myLocation.coordinate, radius: 10000, completionHandler: { (status, success, res) -> Void in
+            taskMng.autoComplete(string2search, location: coord, radius: 10000, completionHandler: { (status, success, res) -> Void in
                 
                 if res != nil {
                     self.resDic = res!
@@ -90,6 +91,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
                 
                 self.resTable.reloadData()
             })
+            }
         }
         else
         {
@@ -103,16 +105,19 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
-        println("You")
+        print("You")
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
+        let ids = resDic.map { (x:(String, String)) -> String in
+            x.0
+        }
         
-        let id = resDic.keys.array[indexPath.row]
+        let id = ids[indexPath.row]
         
         
-        var cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: id)
+        let cell = UITableViewCell(style: UITableViewCellStyle.Default, reuseIdentifier: id)
         
         cell.textLabel?.text = resDic[id]
         
@@ -142,7 +147,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         searchBar.text = resTable.cellForRowAtIndexPath(indexPath)?.textLabel?.text
-        var placeId = resTable.cellForRowAtIndexPath(indexPath)?.reuseIdentifier
+        let placeId = resTable.cellForRowAtIndexPath(indexPath)?.reuseIdentifier
         
         if (placeId != nil)
         {
@@ -154,7 +159,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
                 self.root!.setTarget(loc)
                 
                 //Comm
-                self.root!.SearchBar.text = self.searchBar.text
+                self.root?.searchBar.text = self.searchBar.text
                 self.view.removeFromSuperview()
                 
             })
@@ -168,7 +173,7 @@ class LookUpVC: UIViewController, UITextFieldDelegate, UITableViewDataSource, UI
     
     
     override func didMoveToParentViewController(parent: UIViewController?) {
-        root = parent as? HomeVC
+        root = parent as? KompassVC
     }
     
     
