@@ -189,6 +189,13 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         peripheral.discoverServices(nil)
     }
     
+    func centralManager(central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: NSError?) {
+        print("Disconnected WTF-------------")
+        BLEConnect()
+    }
+    
+
+    
     // Check if the service discovered is a valid IR Temperature Service
     func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
         print( "Looking at peripheral services")
@@ -254,7 +261,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
 //            
             // Convert NSData to array of signed 16 bit values
             let dataBytes = characteristic.value
-            let dataLength = dataBytes!.length
+            //let dataLength = dataBytes!.length
             
             var msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
             
@@ -266,7 +273,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
 //            let degree = Double(dataArray[1])
             
             // Display on the temp label
-            print(dataArray)
+            print(msg)
         }
         
        
