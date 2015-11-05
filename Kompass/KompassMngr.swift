@@ -112,19 +112,18 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     {
         if sensorTagPeripheral != nil && rxChar != nil
         {
-            let rdist = Int(round(dist/100))
-            let rbearing = max(15, min(345, 180 + Int(bearing)))
+            let rdist = min(9999, Int(round(dist/10)))
+            let bear = bearing % 360
+            let rbearing = max(15, min(345, 180 + Int(bear)))
             
             let distString = rdist.format("04")
             let bearingString = rbearing.format("03")
             
             let formatedString = "d\(distString)b\(bearingString)\n"
-            
-            
+            //print(formatedString)
             let data = (formatedString as NSString).dataUsingEncoding(NSUTF8StringEncoding)
             self.sensorTagPeripheral.writeValue(data!, forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
-            print(formatedString)
-            print("msg sent")
+            
         }
         
     }
@@ -247,33 +246,23 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     // Get data values when they are updated
     func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
         
-        print("Connected")
+        
         
         if characteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
-            
-//            NSData *data = characteristic.value;
-//            NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
-//            
-//            NSLog(@"Value %@",value);
-//            NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-//            
-//            NSLog(@"Data ====== %@", stringFromData);
-//            
+
             // Convert NSData to array of signed 16 bit values
             let dataBytes = characteristic.value
             //let dataLength = dataBytes!.length
             
-            var msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
+           if let msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
+           {
+          
+            //var test = msg.stringByReplacingOccurrencesOfString("\n", withString: "")
+            let test = msg.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+            print( test)
             
-//            //let msg = NSString(bytes: dataBytes, length: dataLength, encoding: let dataLength = dataBytes!.length)
-//            var dataArray = [NSUTF8StringEncoding](count: dataLength, repeatedValue: 0)
-//            dataBytes!.getBytes(&dataArray, length: dataLength * sizeof(Int16))
-//            
-//            // Element 1 of the array will be ambient temperature raw value
-//            let degree = Double(dataArray[1])
-            
-            // Display on the temp label
-            print(msg)
+           // print("fuck")
+            }
         }
         
        

@@ -12,12 +12,12 @@ class StaticInfo {
     
     class var MainColor: UIColor
     {
-        return UIColor.purpleColor()
+        return UIColor.grayColor()
     }
     
     class var SecondColor: UIColor
     {
-        return UIColor.grayColor()
+        return UIColor.whiteColor()
     }
     
     class var Font1: UIFont
