@@ -10,13 +10,14 @@ import Foundation
 import UIKit
 import CoreMotion
 import CoreBluetooth
+import CorePlot
 
-class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate, CBPeripheralDelegate  {
+class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate, CBPeripheralDelegate, CPTPlotDataSource  {
     
     // BLE
     var centralManager : CBCentralManager!
     var sensorTagPeripheral : CBPeripheral!
-  //var but : UIButton!
+    //var but : UIButton!
     
     let SERVICE_TRUCONNECT_UUID = CBUUID(string: "175f8f23-a570-49bd-9627-815a6a27de2a")
     let CHARACTERISTIC_TRUCONNECT_PERIPHERAL_RX_UUID =  CBUUID(string:"1cce1ea8-bd34-4813-a00a-c76e028fadcb")
@@ -28,15 +29,22 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     var modeChar:CBCharacteristic?;
     
     
-   // let queue = NSOperationQueue()
-
+    //readings for plotting
+    var strBuffer: String = ""
+    var magXreagings: [Int] = [0];
+    var magYreadings: [Int] = [0];
+    var slotreadings: [Int] = [0];
+    var graphVC: GraphPloterVC?
+    
+    // let queue = NSOperationQueue()
+    
     //Location
     var locmanager: CLLocationManager!
     var target_: CLLocation?
     
     
     //ViewController
-    var kompass: KompassVC!
+    var kompass: KompassVC?
     
     
     
@@ -56,7 +64,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     var dist: Double
         {
         get {
-        
+            
             if locmanager.location == nil || target == nil
             {
                 return 0.0
@@ -83,8 +91,8 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         }
     }
     
-     init(kompasss : KompassVC){
-      
+    init(kompasss : KompassVC){
+        
         super.init()
         
         locmanager = CLLocationManager()
@@ -102,8 +110,32 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         //init KompassVC
         self.kompass = kompasss
         kompasss.KompassManager = self
-
-
+        
+        
+        
+    }
+    
+    override init(){
+        
+        super.init()
+        
+        locmanager = CLLocationManager()
+        locmanager.headingFilter = 5
+        locmanager.headingOrientation = CLDeviceOrientation.FaceUp
+        locmanager.distanceFilter = 0.05
+        locmanager.startUpdatingLocation()
+        locmanager.startUpdatingHeading()
+        
+        locmanager.delegate = self
+        
+        //init BLE
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+        
+        //init KompassVC
+        //self.kompass = kompasss
+        //kompasss.KompassManager = self
+        
+        
         
     }
     
@@ -120,14 +152,14 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
             let bearingString = rbearing.format("03")
             
             let formatedString = "d\(distString)b\(bearingString)\n"
-            //print(formatedString)
+           // print(formatedString)
             let data = (formatedString as NSString).dataUsingEncoding(NSUTF8StringEncoding)
             self.sensorTagPeripheral.writeValue(data!, forCharacteristic: rxChar!, type: CBCharacteristicWriteType.WithResponse)
             
         }
         
     }
-
+    
     
     func BLEConnect()
     {
@@ -140,12 +172,12 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
             // Can have different conditions for all states if needed - print generic message for now
             print("Bluetooth switched off or not initialized")
         }
-
+        
     }
     
     
-
-
+    
+    
     //MARK: BLE
     // Check status of BLE hardware
     func centralManagerDidUpdateState(central: CBCentralManager) {
@@ -193,7 +225,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         BLEConnect()
     }
     
-
+    
     
     // Check if the service discovered is a valid IR Temperature Service
     func peripheral(peripheral: CBPeripheral, didDiscoverServices error: NSError?) {
@@ -224,7 +256,7 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         
         // check the uuid of each characteristic to find config and data characteristics
         for charateristic in service.characteristics! {
-            let thisCharacteristic = charateristic 
+            let thisCharacteristic = charateristic
             // check for data characteristic
             if thisCharacteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
                 // Enable Sensor Notification
@@ -246,26 +278,78 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
     // Get data values when they are updated
     func peripheral(peripheral: CBPeripheral, didUpdateValueForCharacteristic characteristic: CBCharacteristic, error: NSError?) {
         
-        
+        if let err = error
+        {
+            print(err.description)
+        }
+         //print("fuck")
         
         if characteristic.UUID == CHARACTERISTIC_TRUCONNECT_PERIPHERAL_TX_UUID {
-
+            
             // Convert NSData to array of signed 16 bit values
             let dataBytes = characteristic.value
             //let dataLength = dataBytes!.length
             
-           if let msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
-           {
-          
-            //var test = msg.stringByReplacingOccurrencesOfString("\n", withString: "")
-            let test = msg.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-            print( test)
-            
-           // print("fuck")
+            if let msg = NSString(data: dataBytes!, encoding: NSUTF8StringEncoding)
+            {
+                
+                //var test = msg.stringByReplacingOccurrencesOfString("\n", withString: "")
+                let test = msg.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+               
+                print(test)
+                
+                strBuffer = strBuffer + test
+                let range = Range<String.Index>(start: strBuffer.endIndex.advancedBy(-1), end: strBuffer.endIndex)
+                let endofstr = strBuffer[range]
+                
+                if endofstr == "T"
+                {
+                    if strBuffer.characters.count == 23
+                    { //end of line:
+                        
+                        
+                        let slotT = strBuffer.substringWithRange(
+                            Range<String.Index>(start: strBuffer.startIndex.advancedBy(6), end: strBuffer.startIndex.advancedBy(8)))
+                        
+                        
+                        let xT = strBuffer.substringWithRange(
+                            Range<String.Index>(start: strBuffer.startIndex.advancedBy(10), end: strBuffer.startIndex.advancedBy(15)))
+                        
+                        
+                        let yT = strBuffer.substringWithRange(
+                            Range<String.Index>(start: strBuffer.startIndex.advancedBy(17), end: strBuffer.startIndex.advancedBy(22)))
+                        
+                        let x:Int? = Int(xT.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))
+                        let y:Int? = Int(yT.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))
+                        let slot:Int? = Int(slotT.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))
+                        
+                        if (slot != nil) && (x != nil) && (y != nil)
+                        {
+                            slotreadings.append(slot!)
+                            magYreadings.append(y!)
+                            magXreagings.append(x!)
+                            
+                            //if any graph, refresh it
+                            if (graphVC != nil)
+                            {
+                                graphVC!.reload()
+                            }
+                            
+                        }
+                        
+                    }
+                    print( strBuffer)
+                    //clean the buffer
+                    strBuffer = ""
+                }
+                
+                
+                
+                // print("fuck")
             }
         }
         
-       
+        
     }
     
     
@@ -293,14 +377,14 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         return radiansToDegrees(radiansBearing)
     }
     
-//    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//       //send new bearing and distance to device
-//        write2Device()
-//        
-//        print("location has changed: \(locations[0].description)")
-//        //display on phone
-//        kompass!.update()
-//    }
+    //    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    //       //send new bearing and distance to device
+    //        write2Device()
+    //
+    //        print("location has changed: \(locations[0].description)")
+    //        //display on phone
+    //        kompass!.update()
+    //    }
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         //send new bearing and distance to device
@@ -308,17 +392,49 @@ class KompassMngr: NSObject, CLLocationManagerDelegate, CBCentralManagerDelegate
         
         //print("location has changed: \(newLocation.description)")
         //display on phone
-        kompass!.update()
+        if (kompass != nil)
+        {
+            kompass!.update()
+        }
     }
     
     func locationManager(manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
-       // print(newHeading.trueHeading)
-        kompass!.deviceHeading = newHeading.trueHeading
-        kompass!.update()
+        // print(newHeading.trueHeading)
+        if (kompass != nil)
+        {
+            kompass!.deviceHeading = newHeading.trueHeading
+            kompass!.update()
+        }
     }
-
+    
+    //    func numberForPlot(plot: CPTPlot, field fieldEnum: UInt, recordIndex idx: UInt) -> AnyObject? {
+    //        return idx+1
+    //    }
+    
+    func numberOfRecordsForPlot(plot: CPTPlot) -> UInt {
+        return UInt(slotreadings.count);
+    }
+    
+    
+    func numbersForPlot(plot: CPTPlot, field fieldEnum: UInt, recordIndexRange indexRange: NSRange) -> [AnyObject]? {
+        
+        switch fieldEnum
+        {
+        case 0 : //x
+            return magXreagings;
+        case 1 : //y
+            return magYreadings;
+        default:
+            return [];
+        }
+        
+        
+    }
+    
     
 }
+
+
 
 extension Int {
     func format(f: String) -> String {
@@ -332,5 +448,5 @@ extension Double {
     }
 }
 
-    
+
     

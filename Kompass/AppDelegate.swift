@@ -24,7 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey("AIzaSyBlOcrqG3siuHfVmrDOTB3kln9nSew0KiM")
         
         
-        let Nav = UINavigationController(rootViewController: KompassVC());
+       // let Nav = UINavigationController(rootViewController: KompassVC());
+        let Nav = UINavigationController(rootViewController: GraphPloterVC());
         Nav.setNavigationBarHidden(true, animated: false);
         
         
